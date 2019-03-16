@@ -1,2 +1,2 @@
 # -Promise
-练习promise
+练习 手写 promise
