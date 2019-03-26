@@ -10,9 +10,8 @@ function after(times, callback) {
 }
 /**
  * 总结：
- * 1.满足条件后 执行某个回调函数
- * 离不开 计数器 
- * 
+ * 1.满足条件后 执行某个回调函数，离不开 计数器 
+ * 2. return 一个新函数 是为了让after参数保留
  */
 let fn = after(2, function(result) {
   console.log(result)

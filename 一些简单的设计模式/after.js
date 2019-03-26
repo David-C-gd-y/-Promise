@@ -12,4 +12,9 @@ let fn = after(2,function() {
 // fn()()
 fn()
 fn()
+/** 
+ *  总结： 
+ *   1. 利用闭包的特性，保留after 函数的参数。
+ *   2. 多次调用 改变after 形参的 值
+ */
 
