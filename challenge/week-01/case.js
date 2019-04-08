@@ -9,13 +9,13 @@ let p = () => {
 };
 
 new Promise((resolve, reject) => {
-  p()
-  setTimeout(() => {
-    reject("success");
-  }, 1000);
+ return  p()
+  // setTimeout(() => {
+  //   reject("success");
+  // }, 1000);
 }).then(r => {
   console.log(r)
 },e => {
-  console.log(e)
+  console.log('e',e)
 })
 // 链式调用 卡住了。。。

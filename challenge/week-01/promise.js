@@ -47,8 +47,9 @@ class Promise {
       }
     }
     try {
-      Exexcutor(resolve, reject)
+      Exexcutor(resolve, reject);
     } catch (error) {
+      console.debug(error)
       reject(error)
     }
   }
@@ -59,13 +60,16 @@ class Promise {
      *  onFulfilled 和 onRejected 都是可选参数。
      *  如果 onFulfilled 不是函数，其必须被忽略
      *  如果 onRejected 不是函数，其必须被忽略
-      */
+    */
+    // 参数的可选
+    onfulfilled = typeof onfulfilled ==='function' ? onfulfilled : value => value;
+    onrejected = typeof onrejected == 'function' ?onrejected : error => {throw error}
     return  new Promise(() => {
       // 使用 status 来屏蔽其他函数对执行
-        if (typeof onfulfilled === 'function' && this.status === FULFILLED) {
+        if (this.status === FULFILLED) {
           onfulfilled(this.value);   
         }
-        if (typeof onrejected === 'function' && this.status === REJECTED) {
+        if (this.status === REJECTED) {
           onrejected(this.reason)
         }  
 
@@ -79,7 +83,7 @@ class Promise {
        * 先分别订阅 <onfulfilled> or <onrejected> 这两个函数，保存在 两个队列中，
        * 
        */ 
-        if (typeof onfulfilled === 'function' && typeof onrejected === 'function' &&  this.status === PENDING) {
+        if (this.status === PENDING) {
           this.onResolveCallBack.push(() => {
             onfulfilled(this.value)
           });
