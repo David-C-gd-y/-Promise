@@ -25,11 +25,9 @@ class Promise {
     this.status = PENDING;
     this.value = undefined; //解决函数 传值
     this.reason = undefined; // 拒绝函数对 传值
-
-    // 遇到异步的时候，需要维护的队列
-    this.onResolveCallBack = [];
+    
+    this.onResolveCallBack = [];// 遇到异步的时候，需要维护的队列
     this.onRejectCallBack = [];
-
     const resolve = (value) => {
       if(this.status === PENDING) {
         this.status = FULFILLED;
@@ -53,7 +51,6 @@ class Promise {
       reject(error)
     }
   }
-
   then(onfulfilled, onrejected){
     // 需要返回一个新的 Promose 才能 纯净的链式调用；
     /** 
@@ -64,7 +61,7 @@ class Promise {
     // 参数的可选
     onfulfilled = typeof onfulfilled ==='function' ? onfulfilled : value => value;
     onrejected = typeof onrejected == 'function' ?onrejected : error => {throw error}
-    return  new Promise(() => {
+    const promise2 = new Promise((resolve,reject) => {
       // 使用 status 来屏蔽其他函数对执行
         if (this.status === FULFILLED) {
           onfulfilled(this.value);   
@@ -93,7 +90,7 @@ class Promise {
         }
 
     })
-
+    return promise2;
   }
 }
 
