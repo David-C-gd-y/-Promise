@@ -51,6 +51,7 @@ class Promise {
       reject(error)
     }
   }
+  
   then(onfulfilled, onrejected){
     // 需要返回一个新的 Promose 才能 纯净的链式调用；
     /** 
