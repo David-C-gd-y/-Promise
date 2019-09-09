@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+
+<body>
+
+</body>
+
+</html>
+<script>
+  let jq = {
+    Callbacks() {
+      let callbacks = []
+      function add(fn) {
+        callbacks.psuh(fn)
+      }
+      function remove(fn) {
+        callbacks = callbacks.filter(item => item != fn)
+      }
+      function fire() {
+        callbacks.forEach(item => item())
+      }
+      return {
+        add,
+        remove,
+        fire
+      }
+    }
+  }
+</script>
