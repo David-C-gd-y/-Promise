@@ -12,37 +12,38 @@
 // “value”是任何合法的JavaScript值(包括未定义的、thenable或promise)。
 // “exception”是一个使用throw语句抛出的值。
 // “reason”是一个值，它指示了一个承诺为什么被拒绝。
+//  A+ 规范测试 https://github.com/promises-aplus/promises-tests
 const PENDING = 'PENDING';
 const FULFILLED = 'FULFILLED';
 const REJECTED = 'REJECTED';
 
 class Promise {
   constructor(Exexcutor) {
-    if(typeof Exexcutor !== 'function') {
-     new TypeError ('Promise Exexcutor is not a function')
-     return;
+    if (typeof Exexcutor !== 'function') {
+      new TypeError('Promise Exexcutor is not a function')
+      return;
     }
     this.status = PENDING;
     this.value = undefined; //解决函数 传值
     this.reason = undefined; // 拒绝函数对 传值
-    
     this.onResolveCallBack = [];// 遇到异步的时候，需要维护的队列
     this.onRejectCallBack = [];
-    const resolve = (value) => {
-      if(this.status === PENDING) {
+
+    const resolve = value => {
+      if (this.status === PENDING) {
         this.status = FULFILLED;
         this.value = value;
         // 发布
-        this.onResolveCallBack.forEach(f=> f());
       }
+      this.onResolveCallBack.forEach(f => f());
     }
-    const reject = (reason) => {
-      if(this.status === PENDING) {
+    const reject = reason => {
+      if (this.status === PENDING) {
         this.status = REJECTED;
         this.reason = reason;
         // 发布
-        this.onRejectCallBack.forEach(f=> f());
       }
+      this.onRejectCallBack.forEach(f => f());
     }
     try {
       Exexcutor(resolve, reject);
@@ -51,48 +52,116 @@ class Promise {
       reject(error)
     }
   }
-  
-  then(onfulfilled, onrejected){
+
+  then (onfulfilled, onrejected) {
+    onfulfilled = typeof onfulfilled === 'function' ? onfulfilled : v => v;
+    onrejected = typeof onrejected === 'function' ? onrejected : e => {
+      throw e
+    }
     // 需要返回一个新的 Promose 才能 纯净的链式调用；
     /** 
      *  onFulfilled 和 onRejected 都是可选参数。
      *  如果 onFulfilled 不是函数，其必须被忽略
      *  如果 onRejected 不是函数，其必须被忽略
     */
-    // 参数的可选
-    onfulfilled = typeof onfulfilled ==='function' ? onfulfilled : value => value;
-    onrejected = typeof onrejected == 'function' ?onrejected : error => {throw error}
-    const promise2 = new Promise((resolve,reject) => {
-      // 使用 status 来屏蔽其他函数对执行
-        if (this.status === FULFILLED) {
-          onfulfilled(this.value);   
+    // 增加多一个判断   判断x 是不是一个promise ，如果是promise 那就采用 当前的promise 的状态
+    const resolvePromise = (promise2, x, resolve, reject) => {
+      if (promise2 === x) {
+        return reject(new TypeError('循环引用'));
+      }
+      let called;
+      if ((typeof x === 'object' && x !== null) || typeof x === 'function') {
+        // 有可能是一个 promise 
+        try {
+          let then = x.then;
+          if (typeof then === 'function') {
+            then.call(x, y => {
+              if (called) return;
+              called = true;
+              resolvePromise(promise2, y, resolve, reject)
+            }, r => {
+              if (called) return;
+              called = true;
+              reject(r)
+            })
+          } else {
+            if (called) return;
+            called = true;
+            resolve(x)
+          }
+        } catch (e) {
+          if (called) return;
+          called = true;
+          reject(e)
         }
-        if (this.status === REJECTED) {
-          onrejected(this.reason)
-        }  
+      } else {
+        if (called) return;
+        called = true;
+        resolve(x)
+      }
+    }
+    let promise2;
+    promise2 = new Promise((resolve, reject) => {
 
-      /**
-       * 但是 then 是同步的，所以会存在 status 还是 pending 的时候,要维护两个队列.
-       * 
-       * 因为 暴露出去的两个 函数<resolve> or <reject>，是提供给使用者的； 
-       * 所以，两个函数触发时机，是由使用者决定，
-       * 
-       * <onfulfilled> or <onrejected>  就是then 里面传的匿名函数
-       * 先分别订阅 <onfulfilled> or <onrejected> 这两个函数，保存在 两个队列中，
-       * 
-       */ 
-        if (this.status === PENDING) {
-          this.onResolveCallBack.push(() => {
-            onfulfilled(this.value)
-          });
-          this.onRejectCallBack.push(() => {
-            onrejected(this.reason)
-          });
-        }
+
+      // 使用 status 来屏蔽其他函数对执行
+      if (this.status === FULFILLED) {
+        setTimeout(() => {
+          try {
+            let x = onfulfilled(this.value);
+            resolvePromise(promise2, x, resolve, reject);
+          } catch (error) {
+            reject(error)
+          }
+        }, 0);
+      }
+      if (this.status === REJECTED) {
+        setTimeout(() => {
+          try {
+            let x = onrejected(this.reason)
+            resolvePromise(promise2, x, resolve, reject);
+          } catch (error) {
+            reject(error)
+          }
+        }, 0);
+      }
+
+      if (this.status === PENDING) { // 说明有异步逻辑
+        // 订阅
+        this.onResolveCallBack.push(() => {
+          setTimeout(() => {
+            try {
+              let x = onfulfilled(this.value);
+              resolvePromise(promise2, x, resolve, reject);
+            } catch (error) {
+              reject(error)
+            }
+          }, 0);
+        });
+        this.onRejectCallBack.push(() => {
+          setTimeout(() => {
+            try {
+              let x = onrejected(this.reason)
+              resolvePromise(promise2, x, resolve, reject);
+            } catch (error) {
+              reject(error)
+            }
+          }, 0);
+        });
+      }
 
     })
     return promise2;
   }
-}
 
+}
+Promise.deferred = Promise.defer = () => {
+  let d = {};
+  d.promise = new Promise((resolve, reject) => {
+    d.resolve = resolve;
+    d.reject = reject;
+  });
+  return d;
+}
+console.log(Date, Promise)
 module.exports = Promise;
