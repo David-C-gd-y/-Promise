@@ -1,0 +1,19 @@
+{
+  "name": "build-my-npm-package",
+  "version": "1.0.0",
+  "description": "",
+  "main": "useA.js",
+  "bin": {
+    "handlejs": "./entry.js"
+  },
+  "dependencies": {
+    "nvm": "0.0.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
