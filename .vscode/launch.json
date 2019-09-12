@@ -8,7 +8,7 @@
       "type": "node",
       "request": "launch",
       "name": "Launch Program",
-      "program": "${workspaceFolder}\\challenge\\common\\useSum.js"
+      "program": "${workspaceFolder}\\challenge\\event-core\\EventEmitter.js"
     }
   ]
 }
