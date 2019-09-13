@@ -2,6 +2,11 @@ module.exports = class EventEmitter {
   constructor() {
     this._event = {};
   }
+  /** 
+   * newListener 在_event 对象里面 负责监听，新加入的事件
+   * 
+   * 
+   */
   on (eventType, callback) {
     if (eventType !== 'newListener') {
       this._event['newListener'] ? this._event['newListener'].forEach(f => f(eventType)) : void 0;
@@ -21,12 +26,14 @@ module.exports = class EventEmitter {
   off (eventType, callback) {
     if (!this._event) this._event = {};
     if (!this._event[eventType]) return;
-    this._event[eventType] = this._event[eventType].filter(fn => {
+    let newListener = this._event[eventType].filter(fn => {
       return fn != callback && fn.l !== callback
     })
-
+    if (this._event[eventType].length !== newListener.length) {
+      this._event['removeListener'] ? this._event['removeListener'].forEach(f => f(eventType)) : void 0;
+    }
   }
-  emit (eventType, ) {
+  emit (eventType) {
     if (!this._event) this._event = {};
     if (!this._event[eventType]) return;
     this._event[eventType].forEach(fn => fn.call(this, ...[].slice.call(arguments, 1)))
