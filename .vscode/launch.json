@@ -8,7 +8,7 @@
       "type": "node",
       "request": "launch",
       "name": "Launch Program",
-      "program": "${workspaceFolder}\\面向对象\\列表\\list.js"
+      "program": "${workspaceFolder}\\challenge\\http-server\\server.js"
     }
   ]
 }
