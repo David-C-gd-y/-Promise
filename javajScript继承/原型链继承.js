@@ -14,7 +14,9 @@
        Student.prototype = new Person() // 子类型的原型为父类型的一个实例对象， 继承父类
        Student.prototype.sayHello = function () { // 只能继承了 父类才能添加原型方法，否则会被覆盖掉
            console.log('hello')
-       }
+       };
+       console.log(Student.prototype.constructor)
+
        var s1 = new Student(15000)
        var s2 = new Student(14000)
        console.log(s1.play)
