@@ -11,7 +11,7 @@ let vm = new Vue({
       a: {
         b:{ c: {}}
       },
-      arr: [1, 2, 3]
+      arr: [{a:1}, 2, 3]
     }
   },
   computed: {
@@ -21,3 +21,6 @@ let vm = new Vue({
 
   }
 });
+
+// 对原生方法进行劫持
+console.log(vm.arr[0]['a'] = 100)
