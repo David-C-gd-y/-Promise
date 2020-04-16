@@ -7,6 +7,7 @@ let vm = new Vue({
       msg: 'hello vue',
       company: {
         name: '软通动力',
+        age: 1
       },
       a: {
         b:{ c: {}}
@@ -21,6 +22,6 @@ let vm = new Vue({
 
   }
 });
-
+// vm.$mount();
 // 对原生方法进行劫持
-console.log(vm.arr[0]['a'] = 100)
+// console.log(vm.arr[0]['a'] = 100)
