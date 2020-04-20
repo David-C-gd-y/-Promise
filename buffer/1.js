@@ -32,3 +32,5 @@ const buf4 = Buffer.from([1, 2, 3]);
 
 const buf5 = Buffer.from('字符串创建')
 // console.log(buf5)
+
+
