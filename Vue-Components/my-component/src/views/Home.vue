@@ -20,6 +20,16 @@ export default {
           show: true,
         },
       });
+      this.$toast({
+        content: 123,
+        type: 'success',
+        confirm: {
+          show: true,
+        },
+      });
+      this.$toast({
+        content: 123,
+      });
     },
   },
 };
